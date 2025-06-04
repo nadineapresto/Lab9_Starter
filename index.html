@@ -47,6 +47,15 @@
       width: 122px;
     }
   </style>
+
+<script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+<script>
+    // TrackJS Script
+    window.TrackJS && TrackJS.install({ 
+      token: "4afe3eb89f7b4c789922d565ee880f41",
+      application: "Lab9_Starter"
+    });
+  </script>
 </head>
 
 <body>
@@ -69,25 +78,35 @@
     </form>
 
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button id="log-btn">Console Log</button>
+      <button id="error-btn">Console Error</button>
+      <button id="count-btn">Console Count</button>
+      <button id="warn-btn">Console Warn</button>
+      <button id="assert-btn">Console Assert</button>
+      <button id="clear-btn">Console Clear</button>
+      <button id="dir-btn">Console Dir</button>
+      <button id="dirxml-btn">Console dirxml</button>
+      <button id="groupstart-btn">Console Group Start</button>
+      <button id="groupend-btn">Console Group End</button>
+      <button id="table-btn">Console Table</button>
+      <button id="starttimer-btn">Start Timer</button>
+      <button id="endtimer-btn">End Timer</button>
+      <button id="trace-btn">Console Trace</button>
+      <button id="globalerror-btn">Trigger a Global Error</button>
+      <button id="trycatch-btn">Try/Catch Demo</button>
     </section>
   </main>
 
   <script>
+    // Input Validation for Error Calculator
+    class CalculatorError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "CalculatorError";
+      }
+    }
+
+    // Error Calculator
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -95,13 +114,140 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+
+      try {
+        if(!firstNum || !secondNum) {
+          throw new CalculatorError("Both inputs must be filled.");
+        }
+
+        if(operator === '/' && parseFloat(secondNum) === 0) {
+          throw new CalculatorError("Cannot divide by zero.");
+        }
+
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`); 
+      } catch (error) {
+        output.innerHTML = error.message;
+        console.error(error);
+      } finally {
+        console.log("Calculation attempted with inputs:", firstNum, operator, secondNum);
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
-    // Start your code here
-    // You may move this JS to another file if you wish
+    // Code Start:
+    console.count("Page loaded");
+
+    // Console Log
+    document.getElementById("log-btn").addEventListener("click", () => {
+        console.log("Console Log Demo");
+    });
+
+    // Console Error
+    document.getElementById("error-btn").addEventListener("click", () => {
+        console.error("Console Error Demo");
+    });
+
+    // Console Count
+    document.getElementById("count-btn").addEventListener("click", () => {
+        console.count("Console Count Demo");
+    });
+
+    // Console Warn
+    document.getElementById("warn-btn").addEventListener("click", () => {
+        console.warn("Console Warn Demo");
+    });
+
+    // Console Assert
+    document.getElementById("assert-btn").addEventListener("click", () => {
+        let isTrue = false;
+        console.assert(isTrue, "Assertion failed: isTrue is false");
+    });
+
+    // Console Clear
+    document.getElementById("clear-btn").addEventListener("click", () => {
+        console.clear();
+    });
+
+    // Console Dir
+    document.getElementById("dir-btn").addEventListener("click", () => {
+        const el = document.body;
+        console.dir(el);
+    });
+
+    // Console dirxml
+    document.getElementById("dirxml-btn").addEventListener("click", () => {
+        const el = document.body;
+        console.dirxml(el);
+    });
+
+    // Console Group Start
+    document.getElementById("groupstart-btn").addEventListener("click", () => {
+        console.group("Grouped Logs");
+        console.log("Inside group 1");
+        console.log("Inside group 2");
+    });
+
+    // Console Group End
+    document.getElementById("groupend-btn").addEventListener("click", () => {
+        console.groupEnd();
+    });
+
+    // Console Table
+    document.getElementById("table-btn").addEventListener("click", () => {
+        const data = [
+            { name: "Autumn", age: 22 },
+            { name: "Nadine", age: 21 }
+        ];
+        console.table(data);
+    });
+
+    // Start Timer
+    document.getElementById("starttimer-btn").addEventListener("click", () => {
+        console.time("Timer");
+    });
+
+    // End Timer
+    document.getElementById("endtimer-btn").addEventListener("click", () => {
+        console.timeEnd("Timer");
+    });
+
+    // Console Trace
+    document.getElementById("trace-btn").addEventListener("click", () => {
+        function traceExample() {
+            console.trace("Trace Example Demo");
+        }
+        traceExample();
+    });
+
+    // Trigger a Global Error
+    document.getElementById("globalerror-btn").addEventListener("click", () => {
+        // Intentionally trigger an error
+        nonExistentFunction();
+    });
+
+    // Global Error Handler
+    window.onerror = function(message, source, lineno, colno, error) {
+        console.error("Global Error Handler:");
+        console.error(`Message: ${message}`);
+        console.error(`Source: ${source}`);
+        console.error(`Line: ${lineno}, Column: ${colno}`);
+        console.error(`Error Object:`, error);
+    };
+
+    // Try/Catch Demo
+    document.getElementById("trycatch-btn").addEventListener("click", () => {
+        try {
+          let missingEl = document.querySelector('#missing-element');
+          if(!missingEl) throw new Error("Element not found in DOM");
+
+          missingEl.innerHTML = "This will not execute";
+        } catch (error) {
+            console.error("Caught Error in Try/Catch Demo:", error.message);
+        } finally {
+            console.log("Try/Catch block executed");
+        }
+    });
   </script>
 </body>
 
